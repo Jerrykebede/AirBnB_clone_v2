@@ -1,0 +1,43 @@
+import MySQLdb
+
+# Function to get the number of records in the states table
+def get_states_count(db_connection):
+    cursor = db_connection.cursor()
+    cursor.execute("SELECT COUNT(*) FROM states")
+    count = cursor.fetchone()[0]
+    cursor.close()
+    return count
+
+# Function to perform the action (create a new record)
+def create_state(db_connection, state_name):
+    cursor = db_connection.cursor()
+    cursor.execute("INSERT INTO states (name) VALUES (%s)", (state_name,))
+    db_connection.commit()
+    cursor.close()
+
+# Example unit test function
+def test_create_state():
+    # Assuming you have a MySQL database connection already established
+    db = MySQLdb.connect(host="localhost", user="your_username", passwd="your_password", db="your_database")
+
+    # Get the initial count of records
+    initial_count = get_states_count(db)
+
+    # Execute the action - create a new state
+    create_state(db, "California")
+
+    # Get the count of records after the action
+    final_count = get_states_count(db)
+
+    # Assert that the final count is one more than the initial count
+    assert final_count == initial_count + 1, "Failed to add a new state"
+
+    # Optionally, you can print a message indicating the test passed
+    print("Unit test passed: A new state was successfully added")
+
+    # Close the database connection
+    db.close()
+
+# Running the unit test
+if __name__ == "__main__":
+    test_create_state()
